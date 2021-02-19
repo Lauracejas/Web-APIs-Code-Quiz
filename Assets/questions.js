@@ -25,7 +25,13 @@ var questions = [
         answer: "alert('Hello World')"
     },
     {
-        title: "What does the following expression return? '!false'",
-        choices: ["null", "true", "undefined", "false"],
-        answer: "undefined"
+        title: "Which one of these is not among the three different types of errors in JavaScript?",
+        choices: [
+            "Animation time errors",
+            "Load time errors",
+            "Run time errors",
+            "Logical Errors"
+        ],
+        answer: "Animation time errors"
+
     }]
