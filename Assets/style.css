@@ -28,17 +28,7 @@ body {
     right: 10px;
   }
   
-  .feedback {
-    font-style: italic;
-    font-size: 120%;
-    margin-top: 20px;
-    padding-top: 10px;
-    color: gray;
-    border-top: 2px solid rgb(201, 193, 193);
-  }
-  
  
-  
   a {
     color: black;
     text-decoration: none;
@@ -86,6 +76,4 @@ body {
     list-style: decimal inside none;
   }
   
- /* li:nth-child(odd) {
-    background-color: #dfdae7;
-  }*/
+ 

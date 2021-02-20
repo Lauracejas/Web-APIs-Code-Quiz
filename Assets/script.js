@@ -1,19 +1,32 @@
 var startBtn = document.querySelector("#start");
 var timeleft = document.querySelector(".timer");
-var secondsLeft = 60; //questions.length * 10;
+var secondsLeft = 60;
 var questionsEl = document.querySelector("#questions");
 var choicesEl = document.querySelector("#choices");
 var submitBtn = document.querySelector("#submit");
 var startBtn = document.querySelector("#start");
 var initialsEl = document.querySelector("#initials");
-var feedbackEl = document.querySelector("#feedback");
 var questionIndex = 0;
 var EndQuiz = document.getElementById("end-quiz");
 var clearBtn = document.getElementById("#clear");
+var timerInterval;
 
+function setTime() {
+    timerInterval = setInterval(function () {
+
+        secondsLeft--;
+        timeleft.textContent = secondsLeft;
+        //console.log(secondsLeft);
+        if (secondsLeft <= 0) {
+            quizEnd();
+            clearInterval(timerInterval);
+            secondsLeft = 0;
+
+        }
+    }, 1000);
+}
 //Start the Quiz
 function startQuiz() {
-    //console.log("start the game");
 
     // hide start screen
     var startScreenEl = document.getElementById("start-quiz");
@@ -22,22 +35,17 @@ function startQuiz() {
     // Un-hide questions
     questionsEl.removeAttribute("class");
 
-    //start the timer
-    function setTime() {
-        var timerInterval = setInterval(function () {
-
-            secondsLeft--;
-            timeleft.textContent = secondsLeft;
-            //console.log(secondsLeft);
-            if (secondsLeft === 0) {
-                clearInterval(timerInterval);
-            }
-        }, 1000);
-    }
     setTime();
     firstQuestion();
 };
 
+
+startBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    startQuiz();
+});
+
+//startBtn.onclick = startQuiz;
 
 function firstQuestion() {
 
@@ -59,19 +67,16 @@ function firstQuestion() {
     });
 }
 
-function questionClick() {
-    if (this.value !== questions[questionIndex]) {
+function questionClick(event) {
+    if (event.target.value !== questions[questionIndex].answer) {
         secondsLeft -= 10;
-        console.log("wrong");
-        if (secondsLeft <= 0) {
-
-            quizEnd();
+        if (secondsLeft < 0) {
+            secondsLeft = 0;
         }
-
     }
     questionIndex++;
     if (questionIndex === questions.length) {
-        console.log("game over");
+
         quizEnd();
     } else {
         firstQuestion();
@@ -79,30 +84,27 @@ function questionClick() {
 }
 
 function quizEnd() {
+    clearInterval(timerInterval);
     EndQuiz.removeAttribute("class");
+
 
     //show final score
     var finalScore = document.getElementById("final-score");
     finalScore.textContent = secondsLeft;
-
+    //console.log(finalScore);
 
     //hide questions
     questionsEl.setAttribute("class", "hide");
 
 }
 
-submitBtn.addEventListener("submit", function (event) {
-    event.preventDefault();
-    savehighScore();
-});
-
+/************************************************************************************************************************/
 function savehighScore() {
     var initials = initialsEl.value.trim();
 
     if (initials !== "") {
         // get saved scores from localstorage, or if not any, set to empty array
-        var highscores =
-            JSON.parse(window.localStorage.getItem("highscores")) || [];
+        var highscores = JSON.parse(localStorage.getItem("highscores")) || [];
 
         // format new score object for current user
         var newScore = {
@@ -112,18 +114,42 @@ function savehighScore() {
 
         // save to localstorage
         highscores.push(newScore);
-        window.localStorage.setItem("highscores", JSON.stringify(highscores));
+        localStorage.setItem("highscores", JSON.stringify(highscores));
 
         // redirect to next page
         window.location.href = "highscores.html";
     }
 }
 
-function clearHighscores() {
-    window.localStorage.removeItem("highscores");
-    window.location.reload();
+
+function printHighscores() {
+    //get scores from localstorage or set to empty array
+    var highscores = JSON.parse(localStorage.getItem("highscores")) || [];
+
+
+    highscores.forEach((score) => {
+        // create li tag for each high score
+        var liTag = document.createElement("li");
+        liTag.textContent = score.initials + " - " + score.score;
+
+        // display on page
+        var list = document.getElementById("highscores");
+        list.appendChild(liTag);
+    });printHighscores();
 }
 
+submitBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+    savehighScore();
+    
+});
 
-//clearBtn.onclick = clearHighscores();
-startBtn.onclick = startQuiz;
+function clearHighscores() {
+    localStorage.removeItem("highscores");
+    location.reload();
+}
+
+clearBtn.addEventListener("click", function(event){
+event.preventDefault();
+clearHighscores();
+});
